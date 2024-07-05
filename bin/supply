@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -eu
+
+BUILD_DIR=$1
+CACHE_DIR=$2
+DEPS_DIR=$3
+DEPS_IDX=$4
+
+echo "-----> Running Java Debug Buildpack supply"
+
+export BUILDPACK_DIR=`dirname $(readlink -f ${BASH_SOURCE%/*})`
+cp "${BUILDPACK_DIR}/java_debug_sidecar" $BUILD_DIR 
+
+echo '---
+processes:
+- type: "java_debug"
+  command: ./java_debug_sidecar
+  limits:
+    memory: 100
+  platforms:
+    cloudfoundry:
+      sidecar_for: [ "web" ]
+' > "$DEPS_DIR"/"$DEPS_IDX"/launch.yml
